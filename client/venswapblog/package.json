@@ -16,10 +16,13 @@
   ],
   "dependencies": {
     "@sanity/vision": "^3.53.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanity": "^3.53.0",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.8",
+    "tailwindcss": "^3.4.10"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^4.0.0",
