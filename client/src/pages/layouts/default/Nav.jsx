@@ -62,10 +62,12 @@ export default function Nav() {
           </NavLink>
           {!token && (
             <NavLink
-              to="about"
-              className={`px-3 py-2 ${matchRoute("/about") && "font-bold"}`}
+              to="international/business_list"
+              className={`px-3 py-2 ${
+                matchRoute("/international/business_list") && "font-bold"
+              }`}
             >
-              About Us
+              Businesses Abroad
             </NavLink>
           )}
         </div>
@@ -184,6 +186,14 @@ export default function Nav() {
               }`}
             >
               Buy a Business
+            </NavLink>
+            <NavLink
+              to="international/business_list"
+              className={`px-3 py-2 ${
+                matchRoute("/international/business_list") && "font-bold"
+              }`}
+            >
+              Businesses Abroad
             </NavLink>
             <NavLink
               to="about"

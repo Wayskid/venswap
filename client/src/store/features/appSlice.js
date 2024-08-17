@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+export const initialState = {
   listingProtocols: {
     setup: true,
     build_listing: false,
@@ -55,6 +55,7 @@ const initialState = {
   },
   notifications: [],
   savedBusinesses: [],
+  blogPosts: [],
 };
 
 export const AppSlice = createSlice({
@@ -93,6 +94,9 @@ export const AppSlice = createSlice({
         ? state.savedBusinesses.filter((b) => b !== action.payload)
         : [action.payload, ...state.savedBusinesses];
     },
+    setBlogPosts: (state, action) => {
+      state.blogPosts = action.payload;
+    },
   },
 });
 
@@ -103,5 +107,6 @@ export const {
   setNotifications,
   clearNotifications,
   saveBusiness,
+  setBlogPosts,
 } = AppSlice.actions;
 export default AppSlice.reducer;

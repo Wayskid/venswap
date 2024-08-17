@@ -1,5 +1,5 @@
 import Analytics from "../models/analyticsModel.js";
-import Businesses from "../models/BusinessModel.js";
+import Businesses, { Int_Businesses } from "../models/BusinessModel.js";
 import Chats from "../models/chatModel.js";
 import Users from "../models/userModel.js";
 
@@ -241,6 +241,234 @@ export async function getBusinesses(req, res) {
   }
 }
 
+export async function getIntBusinesses(req, res) {
+  try {
+    const search = req.query.search || "";
+    let category = req.query.category || "All";
+    let country = req.query.country || "All";
+    let property = req.query.property || "All";
+    let date_filter = req.query.date_filter || "Anytime";
+    const sort_price = req.query.sort_price || "All";
+    const limit = +req.query.limit || 25;
+    const page = +req.query.page - 1 || 0;
+
+    const categoryOptions = [
+      "Automotive",
+      "Supplies",
+      "Computers",
+      "Construction",
+      "Education",
+      "Entertainment",
+      "Food",
+      "Health",
+      "Home",
+      "Legal",
+      "Manufacturing",
+      "Merchants",
+      "Miscellaneous",
+      "Care",
+      "Estate",
+      "Travel",
+    ];
+    const countryOptions = [
+      "Abia",
+      "Adamawa",
+      "Akwa_Ibom",
+      "Anambra",
+      "Bauchi",
+      "Bayelsa",
+      "Benue",
+      "Borno",
+      "Cross_River",
+      "Delta",
+      "Ebonyi",
+      "Edo",
+      "Ekiti",
+      "Enugu",
+      "FCT_Abuja",
+      "Gombe",
+      "Imo",
+      "Jigawa",
+      "Kaduna",
+      "Kano",
+      "Katsina",
+      "Kebbi",
+      "Kogi",
+      "Kwara",
+      "Lagos",
+      "Nasarawa",
+      "Niger",
+      "Ogun",
+      "Ondo",
+      "Osun",
+      "Oyo",
+      "Plateau",
+      "Rivers",
+      "Sokoto",
+      "Taraba",
+      "Yobe",
+      "Zamfara",
+    ];
+    const propertyOptions = ["Freehold", "Leasehold", "Relocatable"];
+
+    // Filtering by category
+    category === "All"
+      ? (category = [...categoryOptions])
+      : (category = req.query.category.split(","));
+
+    // Filtering by state
+    country === "All"
+      ? (country = [...countryOptions])
+      : (country = req.query.country.split(","));
+
+    // Filtering by property
+    property === "All"
+      ? (property = [...propertyOptions])
+      : (property = req.query.property.split(","));
+
+    // Filtering by date
+    let dateFilterBy = new Date(2024, 1, 1);
+    if (date_filter.length > 1) {
+      switch (date_filter) {
+        case "Anytime":
+          dateFilterBy = new Date(2024, 1, 1);
+          break;
+        case "less_5D":
+          dateFilterBy = new Date(
+            new Date().getTime() - 6 * 24 * 60 * 60 * 1000
+          );
+          break;
+        case "less_14D":
+          dateFilterBy = new Date(
+            new Date().getTime() - 15 * 24 * 60 * 60 * 1000
+          );
+          break;
+        case "less_1M":
+          dateFilterBy = new Date(
+            new Date().getTime() - 32 * 24 * 60 * 60 * 1000
+          );
+          break;
+        case "greater_3M":
+          dateFilterBy = new Date(
+            new Date().getTime() - 100 * 24 * 60 * 60 * 1000
+          );
+          break;
+        default:
+          dateFilterBy = new Date(2024, 1, 1);
+          break;
+      }
+    }
+
+    // sorting by price
+    let sortPriceBy = { $gt: 0 };
+    if (sort_price.length > 1) {
+      switch (sort_price) {
+        case "All":
+          sortPriceBy = { $gt: 0 };
+          break;
+        case "less_500k":
+          sortPriceBy = { $lt: 500001 };
+          break;
+        case "less_1M":
+          sortPriceBy = { $lt: 1000001 };
+          break;
+        case "less_3M":
+          sortPriceBy = { $lt: 3000001 };
+          break;
+        case "greater_3M":
+          sortPriceBy = { $gt: 3000000 };
+          break;
+        default:
+          sortPriceBy = { $gt: 0 };
+          break;
+      }
+    }
+
+    const businesses = await Int_Businesses.find({
+      $or: [
+        {
+          "listing_details.listing_title": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          "business_details.business_location.country": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          "listing_details.listing_summary": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      ],
+      asking_price: sortPriceBy,
+    })
+      .where("business_details.category")
+      .in([...category])
+      .where("business_details.business_location.country")
+      .in([...country])
+      .where("business_details.property_details.type")
+      .in([...property])
+      .where("createdAt")
+      .gte(dateFilterBy)
+      .lte(new Date())
+      .skip(page * limit)
+      .limit(limit)
+      .populate("seller_id", "-password")
+      .select("-business_documents");
+
+    const totalResults = await Int_Businesses.countDocuments({
+      $or: [
+        {
+          "listing_details.listing_title": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          "business_details.business_location.country": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          "listing_details.listing_summary": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      ],
+      asking_price: sortPriceBy,
+      "business_details.category": { $in: [...category] },
+      "business_details.business_location.country": { $in: [...country] },
+      "business_details.property_details.type": { $in: [...property] },
+      createdAt: { $gt: dateFilterBy, $lt: new Date() },
+    });
+
+    if (!businesses.length) throw new Error("No business found.");
+
+    res.status(200).json({
+      businesses,
+      resultCount: totalResults,
+      limit,
+      currentPage: page + 1,
+      searched: search,
+    });
+  } catch (error) {
+    res
+      .status(400)
+      .json(
+        error.message === "No business found."
+          ? error.message
+          : "Something went wrong"
+      );
+  }
+}
+
 export async function getSavedBusinesses(req, res) {
   try {
     const saved = req.body.saved || [];
@@ -269,6 +497,29 @@ export async function getOneBusiness(req, res) {
     const business = await Businesses.findById(business_id)
       .populate("seller_id", "-password")
       .select("-business_documents");
+
+    if (!business) throw new Error("This business cannot be found");
+
+    res.status(200).json(business);
+  } catch (error) {
+    res
+      .status(400)
+      .json(
+        error.message === "This business cannot be found"
+          ? error.message
+          : "Something went wrong"
+      );
+  }
+}
+
+export async function getOneIntBusiness(req, res) {
+  try {
+    const { business_id } = req.params;
+
+    const business = await Int_Businesses.findById(business_id).populate(
+      "seller_id",
+      "-password"
+    );
 
     if (!business) throw new Error("This business cannot be found");
 

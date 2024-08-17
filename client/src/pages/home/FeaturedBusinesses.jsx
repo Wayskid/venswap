@@ -75,11 +75,11 @@ export default function FeaturedBusinesses({
                   Sold Out
                 </p>
               )}
-              <div className="h-[10rem] bg-Blue">
+              <div className="h-[10rem] bg-Blue overflow-hidden">
                 <img
                   src={business.listing_details.images[0]}
                   alt=""
-                  className={`w-full h-full object-cover cursor-pointer opacity-90`}
+                  className={`w-full h-full object-cover cursor-pointer opacity-90 hover:scale-[1.04] transition duration-700`}
                 />
               </div>
               <div className="px-1 my-3 grid text-center justify-center cursor-pointer">

@@ -65,6 +65,61 @@ export const appApi = createApi({
       },
     }),
 
+    //---  GET INT BUSINESSES  ---//
+    getIntBusinesses: builder.query({
+      query: ({
+        search,
+        category,
+        country,
+        property,
+        date_filter,
+        sort_price,
+        limit,
+        page,
+      }) => ({
+        url: `/business/int?search=${search}&category=${category}&country=${country}&property=${property}&date_filter=${date_filter}&sort_price=${sort_price}&limit=${limit}&page=${page}`,
+        method: "get",
+      }),
+      async onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+      ) {
+        const socket = io(import.meta.env.VITE_BASE_URL);
+        try {
+          await cacheDataLoaded;
+
+          socket.onAny((eventName, result) => {
+            if (eventName === "update_businesses") {
+              updateCachedData((draft) => {
+                draft.push(newBusiness);
+              });
+            }
+            if (eventName === "delete_update") {
+              updateCachedData((draft) => {
+                const updated = draft.filter(
+                  (product) => product._id !== result.product_id
+                );
+                return (draft = updated);
+              });
+            }
+            if (eventName === "update_business") {
+              updateCachedData((draft) => {
+                const updated = draft.forEach((business, i) => {
+                  if (business._id === result._id) {
+                    draft[i] = result;
+                  }
+                });
+                return (draft = updated);
+              });
+            }
+          });
+        } catch {
+          (err) => console.log(err.message);
+        }
+        await cacheEntryRemoved;
+      },
+    }),
+
     //---  GET SAVED BUSINESS  ---//
     getSavedBusinesses: builder.query({
       query: ({ body }) => ({
@@ -78,6 +133,30 @@ export const appApi = createApi({
     getOneBusiness: builder.query({
       query: ({ business_id }) => ({
         url: `/business/business_details/${business_id}`,
+        method: "get",
+      }),
+      async onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+      ) {
+        const socket = io(import.meta.env.VITE_BASE_URL);
+        try {
+          await cacheDataLoaded;
+
+          socket.on("update_business", (arg) => {
+            updateCachedData((draft) => {
+              Object.assign(draft, arg);
+            });
+          });
+        } catch {}
+        await cacheEntryRemoved;
+      },
+    }),
+
+    //---  GET ONE BUSINESS  ---//
+    getOneIntBusiness: builder.query({
+      query: ({ business_id }) => ({
+        url: `/business/int/business_details/${business_id}`,
         method: "get",
       }),
       async onCacheEntryAdded(
@@ -583,8 +662,10 @@ export const appApi = createApi({
 
 export const {
   useGetBusinessesQuery,
+  useGetIntBusinessesQuery,
   useGetSavedBusinessesQuery,
   useGetOneBusinessQuery,
+  useGetOneIntBusinessQuery,
   useGetUserBusinessesQuery,
   useCreateBusinessMutation,
   useEditBusinessMutation,

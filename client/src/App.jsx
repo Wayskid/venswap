@@ -38,6 +38,10 @@ import { setNotifications } from "./store/features/appSlice.js";
 import { io } from "socket.io-client";
 import SavedBusinesses from "./pages/business/SavedBusinesses.jsx";
 import Escrow from "./pages/Escrow.jsx";
+import Int_ContactSeller from "./pages/international/Int_ContactSeller.jsx";
+import Int_BusinessDetails from "./pages/international/Int_BusinessDetails.jsx";
+import Int_BusinessList from "./pages/international/Int_BusinessList.jsx";
+import BlogPost from "./pages/blog/BlogPost.jsx";
 
 function App() {
   const { token, userInfo } = useContext(appContext);
@@ -110,6 +114,28 @@ function App() {
                 element={<ContactSeller />}
               ></Route>
             </Route>
+
+            {/* International */}
+            <Route
+              path="international/business_list"
+              element={<Int_BusinessList />}
+            ></Route>
+            <Route
+              path="international/business_details/:business_id"
+              element={<Int_BusinessDetails />}
+            ></Route>
+            <Route element={<PrivateRoutes />}>
+              <Route
+                path="international/business_details/:business_id/contact"
+                element={<Int_ContactSeller />}
+              ></Route>
+            </Route>
+
+            {/* Others */}
+            <Route
+              path="blog/:post_title/:post_id"
+              element={<BlogPost />}
+            ></Route>
             <Route path="saved" element={<SavedBusinesses />}></Route>
             <Route path="about" element={<About />}></Route>
             <Route path="faq" element={<FAQ />}></Route>

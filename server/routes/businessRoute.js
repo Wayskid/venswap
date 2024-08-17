@@ -5,20 +5,24 @@ import {
   getUserBusinesses,
   editBusiness,
   getBusinesses,
+  getIntBusinesses,
   getOneBusiness,
   getEnquiries,
   getOrders,
   featureBusiness,
   getSavedBusinesses,
   accountOverview,
+  getOneIntBusiness,
 } from "../controllers/businessController.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const businessRoute = express.Router();
 
 businessRoute.get("/", getBusinesses);
+businessRoute.get("/int", getIntBusinesses);
 businessRoute.post("/saved", getSavedBusinesses);
 businessRoute.get("/business_details/:business_id", getOneBusiness);
+businessRoute.get("/int/business_details/:business_id", getOneIntBusiness);
 businessRoute.get("/user_listing/:user_id", getUserBusinesses);
 businessRoute.post("/create/:seller_id", verifyToken, createBusiness);
 businessRoute.patch("/edit/:seller_id/:business_id", verifyToken, editBusiness);

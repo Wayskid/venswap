@@ -4,6 +4,7 @@ import FeaturedBusinesses from "./FeaturedBusinesses";
 import { useGetBusinessesQuery } from "../../services/appApi";
 import CategoryAndState from "./CategoryAndState";
 import { Helmet } from "react-helmet-async";
+import HomeBlog from "../blog/HomeBlog";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ export default function Home() {
         result={businessListResult?.businesses}
         isLoading={isLoading}
       />
+      <HomeBlog />
     </div>
   );
 }
