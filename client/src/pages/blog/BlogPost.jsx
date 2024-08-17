@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import imageUrlBuilder from "@sanity/image-url";
 import { sanityClient } from "../../../venswapblog/sanityclient";
-import { setBlogPosts } from "../../store/features/appSlice";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useGetBusinessesQuery } from "../../services/appApi";
