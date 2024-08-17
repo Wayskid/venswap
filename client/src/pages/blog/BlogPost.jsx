@@ -42,8 +42,6 @@ export default function BlogPost() {
     setPost(blogPosts.find((post) => post._id === post_id));
   }, [post_id]);
 
-  console.log(post);
-
   return (
     post?._id && (
       <section className="bg-White">

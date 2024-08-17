@@ -53,8 +53,6 @@ export default function Preview() {
     },
   } = useSelector((state) => state.app);
 
-  console.log(doc_file);
-
   useEffect(() => {
     if (!listingProtocols.preview) {
       navigate("/sell_business");

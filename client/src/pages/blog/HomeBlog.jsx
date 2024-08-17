@@ -19,10 +19,8 @@ export default function HomeBlog() {
       .then((data) => dispatch(setBlogPosts(data)));
   }, []);
 
-  console.log(blogPosts);
-
   return (
-    blogPosts.length > 0 && (
+    blogPosts?.length > 0 && (
       <div className="bg-[#c5c1fd] text-gray-900">
         <div className="w-[min(92rem,100%)] mx-auto px-4 md:px-12 lg:px-32 py-16 grid">
           <p className="text-3xl font-semibold">On the blog</p>

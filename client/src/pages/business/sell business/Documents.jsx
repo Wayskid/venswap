@@ -32,7 +32,6 @@ export default function Documents() {
     }
   );
 
-  console.log(businessDocsVal);
   useEffect(() => {
     if (!listingProtocols.documents) {
       navigate("/sell_business");
