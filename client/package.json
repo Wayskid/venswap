@@ -25,6 +25,7 @@
     "buffer": "^6.0.3",
     "cloudinary-build-url": "^0.2.4",
     "deep-equal": "^2.2.3",
+    "javascript-time-ago": "^2.5.10",
     "js-cookie": "^3.0.5",
     "localforage": "^1.10.0",
     "moment": "^2.30.1",

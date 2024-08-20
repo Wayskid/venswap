@@ -2,15 +2,25 @@ import React, { useContext, useEffect, useState } from "react";
 import { IoMailUnreadOutline, IoSearchOutline } from "react-icons/io5";
 import { Link, Outlet, useParams } from "react-router-dom";
 import appContext from "../../../../contexts/AppContext";
-import { useGetChatsQuery } from "../../../../services/appApi";
+import {
+  useGetChatsQuery,
+  useReadMessageMutation,
+} from "../../../../services/appApi";
 import Loading from "../../../../components/reuseable/Loading";
 import moment from "moment";
 import { FaImage } from "react-icons/fa";
 import { GrDocumentPdf } from "react-icons/gr";
 import { Helmet } from "react-helmet-async";
+import { IoMdMailUnread } from "react-icons/io";
+import { useSocket } from "../../../../contexts/SocketProvider";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
 
 export default function Messages() {
   const { chat_id } = useParams();
+  TimeAgo.setDefaultLocale(en);
+  TimeAgo.addLocale(en);
+  const timeAgo = new TimeAgo("en-GB");
   const {
     token,
     userInfo: { _id },
@@ -29,6 +39,16 @@ export default function Messages() {
   }, []);
 
   const [showMessage, setShowMessage] = useState(chat_id ? true : false);
+
+  const { socket } = useSocket();
+  const [readMessageApi] = useReadMessageMutation();
+  function handleReadMessage(message_id) {
+    readMessageApi({ message_id, token })
+      .unwrap()
+      .then((res) => {
+        socket.emit("edit_message", res);
+      });
+  }
 
   return (
     <section className="bg-White h-[calc(100%-49px)] grid">
@@ -65,11 +85,16 @@ export default function Messages() {
                     return (
                       <Link
                         key={chat._id}
-                        className={`grid grid-cols-[auto,1fr] gap-2 items-center py-2 px-1 rounded-sm ${
+                        className={`grid grid-cols-[auto,1fr] gap-2 items-center py-2 px-1 rounded-sm hover:bg-[#dbe1e35c] transition ${
                           chat._id === chat_id && "bg-[#dbe1e35c]"
                         }`}
                         to={`/account/messages/${chat._id}`}
-                        onClick={() => setShowMessage(true)}
+                        onClick={() => {
+                          setShowMessage(true);
+                          if (chat.latest_message.isRead === false) {
+                            handleReadMessage(chat.latest_message._id);
+                          }
+                        }}
                       >
                         {receiver.avatar ? (
                           <img
@@ -117,19 +142,21 @@ export default function Messages() {
                               )}
                             </div>
                           </div>
-                          <div className="grid">
+                          <div className="grid content-between">
                             <p className="text-sm text-right">
-                              {
-                                moment(chat.latest_message.updatedAt)
-                                  .fromNow(true)
-                                  .split(" ")[0]
-                              }
-                              {moment(chat.latest_message.updatedAt)
-                                .fromNow(true)
-                                .split(" ")[1]
-                                .slice(0, 1)}{" "}
-                              ago
+                              {timeAgo.format(
+                                new Date(moment(chat.latest_message.createdAt)),
+                                "mini"
+                              )}
                             </p>
+                            <IoMdMailUnread
+                              className={`ml-auto text-xl ${
+                                chat.latest_message.isRead === true ||
+                                chat.latest_message.sender_id === _id
+                                  ? "text-transparent"
+                                  : "text-Blue"
+                              }`}
+                            />
                           </div>
                         </div>
                       </Link>

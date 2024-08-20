@@ -3,6 +3,7 @@ import {
   createMessage,
   editOfferMessage,
   getMessages,
+  readMessage,
   updatePaymentStatus,
 } from "../controllers/messageController.js";
 import { verifyToken } from "../middleware/auth.js";
@@ -21,5 +22,6 @@ messageRoute.patch(
   verifyToken,
   updatePaymentStatus
 );
+messageRoute.patch("/read_message/:message_id", verifyToken, readMessage);
 
 export default messageRoute;

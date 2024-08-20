@@ -17,6 +17,7 @@ import {
   useGetOneChatQuery,
   useGetSecureLinkMutation,
   useGetSignedCloudinaryMutation,
+  useReadMessageMutation,
 } from "../../../../services/appApi";
 import Loading from "../../../../components/reuseable/Loading";
 import { useSocket } from "../../../../contexts/SocketProvider";

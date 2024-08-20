@@ -92,3 +92,21 @@ export const updatePaymentStatus = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
+
+export const readMessage = async (req, res) => {
+  try {
+    const { message_id } = req.params;
+
+    const message = await Messages.findById(message_id);
+
+    if (message.isRead === false) message.isRead = true;
+    const modifiedMessage = await message.save();
+    const updated_message = await Messages.findById(modifiedMessage._id)
+      .populate("sender_id", "-password")
+      .populate("chat_id");
+
+    res.status(200).json(updated_message);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};

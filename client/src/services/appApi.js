@@ -367,6 +367,17 @@ export const appApi = createApi({
       }),
     }),
 
+    //---  READ MESSAGE  ---//
+    readMessage: builder.mutation({
+      query: ({ message_id, token }) => ({
+        url: `/message/read_message/${message_id}`,
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+    }),
+
     //---  EDIT MESSAGE OFFER  ---//
     withdrawOffer: builder.mutation({
       query: ({ sender_id, message_id, token }) => ({
@@ -678,6 +689,7 @@ export const {
   useCreateChatsMutation,
   useGetMessageQuery,
   useCreateMessageMutation,
+  useReadMessageMutation,
   useWithdrawOfferMutation,
   useUpdatePaymentStatusMutation,
   useRegisterUserMutation,

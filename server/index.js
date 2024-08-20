@@ -16,6 +16,7 @@ import { deleteImage, signUpload } from "./config/cloudinary.js";
 import { verifyToken } from "./middleware/auth.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 import analyticsRoute from "./routes/analyticsRoute.js";
+import Messages from "./models/messageModel.js";
 
 dotenv.config();
 connectDB();
@@ -53,20 +54,15 @@ app.use("/api/report", reportRoute);
 
 // app.use("/api/addAvatar", async (req, res) => {
 //   try {
-//     const updated = await Users.updateMany(
+//     const updated = await Messages.updateMany(
 //       {},
 //       {
 //         $set: {
-//           user_verifications: {
-//             email: { content: "", verified: false },
-//             phone: { content: "", verified: false },
-//             ID: { content: "", verified: false },
-//           },
+//           isRead: true,
 //         },
 //       },
 //       { upsert: true }
 //     );
-
 //     res.status(200).json(updated);
 //   } catch (err) {
 //     res.status(400).json(err.message);

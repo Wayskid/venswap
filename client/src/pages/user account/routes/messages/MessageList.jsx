@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   useCreatePaymentMutation,
   useGetMessageQuery,
+  useReadMessageMutation,
   useUpdatePaymentStatusMutation,
   useWithdrawOfferMutation,
 } from "../../../../services/appApi";
@@ -28,8 +29,22 @@ export default function MessageList() {
     refetch,
   } = useGetMessageQuery({ chat_id, token });
 
+  //Read messages
+  const [readMessageApi] = useReadMessageMutation();
+
   useEffect(() => {
     refetch();
+    const unreadChats = messageListResult?.filter(
+      (message) => message.isRead === false
+    );
+    for (let i = 0; i < unreadChats?.length; i++) {
+      const chat = unreadChats[i];
+      readMessageApi({ message_id: chat._id, token })
+        .unwrap()
+        .then((res) => {
+          socket.emit("edit_message", res);
+        });
+    }
   }, []);
 
   const [imageToView, setImageToView] = useState(null);
@@ -44,7 +59,7 @@ export default function MessageList() {
     })
       .unwrap()
       .then((res) => {
-        socket.emit("edit_message_offer", res);
+        socket.emit("edit_message", res);
       });
   }
 
@@ -85,7 +100,7 @@ export default function MessageList() {
           })
             .unwrap()
             .then((res) => {
-              socket.emit("edit_message_offer", res);
+              socket.emit("edit_message", res);
             });
         });
     };

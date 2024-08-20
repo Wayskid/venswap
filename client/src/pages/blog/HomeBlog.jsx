@@ -33,7 +33,7 @@ export default function HomeBlog() {
               <Link
                 to={`/blog/${post.title.replaceAll(" ", "_")}/${post._id}`}
                 key={post._id}
-                className="space-y-1 shadow-sm pb-2"
+                className="space-y-1 shadow-md pb-2"
               >
                 <div className="grid h-52 overflow-hidden">
                   {post.mainImage && (

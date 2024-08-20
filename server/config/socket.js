@@ -16,7 +16,7 @@ const socketConnect = (server, options) => {
     socket.on("new_message", (newMessage) => {
       socket.broadcast.emit("update_messages", newMessage);
     });
-    socket.on("edit_message_offer", (updatedMessage) => {
+    socket.on("edit_message", (updatedMessage) => {
       socket.broadcast.emit("update_message", updatedMessage);
     });
   });

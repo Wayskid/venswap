@@ -32,7 +32,7 @@ export default function Overview() {
             </Link>
           </div>
           <div className="shadow-md rounded-sm p-3 md:p-5">
-            <p className="text-xl">Enquires</p>
+            <p className="text-xl">Enquiries</p>
             <p className="text-Blue font-bold text-[4.5rem] my-2">
               {isLoading ? "0" : overviewResult?.no_of_enquiries}
             </p>
